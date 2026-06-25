@@ -1,0 +1,410 @@
+/* verify — light "certificate of provenance" theme.
+   Warm archival paper, ink type, verdigris accent, stamped verdicts. */
+
+:root {
+  --paper: #f3eee2; /* warm paper ground */
+  --paper-card: #fbf8f0; /* lighter card stock */
+  --ink: #1f1c14; /* warm near-black */
+  --ink-soft: #6a6353; /* muted label ink (≥4.5:1 on paper) */
+  --line: #d8d0bd; /* hairlines */
+  --line-strong: #c3b9a1;
+  --accent: #2c4a44; /* verdigris engraving ink */
+
+  /* status inks — all dark-on-tint, contrast-checked on paper */
+  --green: #1f5d40;
+  --green-bg: #e4eee5;
+  --amber: #855711;
+  --amber-bg: #f2e7cf;
+  --red: #9a261b;
+  --red-bg: #f1e0da;
+  --grey: #5c5648;
+  --grey-bg: #e9e3d4;
+
+  --display: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --sans: 'Hanken Grotesk', system-ui, sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+
+  --shadow: 0 1px 2px rgba(31, 28, 20, 0.04), 0 12px 30px -16px rgba(31, 28, 20, 0.25);
+  --radius: 4px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.6;
+  /* paper ground with a faint two-tone wash for depth */
+  background-color: var(--paper);
+  background-image: radial-gradient(
+      120% 80% at 50% -10%,
+      rgba(255, 255, 255, 0.7),
+      transparent 60%
+    ),
+    radial-gradient(100% 60% at 50% 110%, rgba(44, 74, 68, 0.05), transparent 55%);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+main {
+  max-width: 660px;
+  margin: 0 auto;
+  padding: clamp(2.5rem, 6vw, 4.5rem) 1.25rem 4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+/* ── Masthead ───────────────────────────────────────────── */
+header {
+  text-align: center;
+}
+
+.kicker {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+h1 {
+  margin: 0.4rem 0 0;
+  font-family: var(--display);
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-size: clamp(2.4rem, 8vw, 3.9rem);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  text-wrap: balance;
+}
+
+h1 em {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--accent);
+}
+
+.rule {
+  width: 100%;
+  height: 1px;
+  margin: 1.1rem 0 0.9rem;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--line-strong) 18%,
+    var(--line-strong) 82%,
+    transparent
+  );
+}
+
+.tagline {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.98rem;
+}
+
+/* ── Field label (shared) ───────────────────────────────── */
+.field-label {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+/* ── Dropzone (file field) ──────────────────────────────── */
+.dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 2.75rem 1.5rem;
+  background: var(--paper-card);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  /* dashed inner frame, like a document field */
+  box-shadow: inset 0 0 0 1px var(--paper-card), inset 0 0 0 2px var(--line);
+  cursor: pointer;
+  text-align: center;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    background-color 0.18s ease;
+}
+
+.dropzone .field-label {
+  margin-bottom: 0.35rem;
+}
+
+.dropzone:hover {
+  border-color: var(--accent);
+  background: #fff;
+}
+
+.dropzone.dragging {
+  border-color: var(--accent);
+  background: #fff;
+  box-shadow: inset 0 0 0 1px #fff, inset 0 0 0 2px var(--accent);
+}
+
+/* keyboard focus surfaces on the wrapping label via :focus-within */
+.dropzone:focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.dz-head {
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 1.4rem;
+  color: var(--ink);
+}
+
+.dz-sub {
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+/* file input: visually hidden but still keyboard-focusable */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ── Trust toggle ───────────────────────────────────────── */
+.trust-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.trust-toggle input {
+  width: 1.05rem;
+  height: 1.05rem;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.trust-toggle input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ── Specimen preview (mounted photo) ───────────────────── */
+.specimen {
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.preview {
+  display: block;
+  max-width: 100%;
+  max-height: 300px;
+  width: auto;
+  height: auto;
+  background: #fff;
+  padding: 8px;
+  border: 1px solid var(--line-strong);
+  border-radius: 2px;
+  box-shadow: var(--shadow);
+}
+
+/* ── Status line ────────────────────────────────────────── */
+.status {
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+}
+
+/* ── Certificate card ───────────────────────────────────── */
+.card {
+  position: relative;
+  background: var(--paper-card);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  padding: 1.6rem 1.6rem 1.5rem;
+  box-shadow: var(--shadow);
+}
+
+/* thin accent edge, like a certificate margin */
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius) 0 0 var(--radius);
+  pointer-events: none;
+}
+
+.card > * + * {
+  margin-top: 1rem;
+}
+
+/* ── Stamp (verdict badge) ──────────────────────────────── */
+.stamp {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--mono);
+  font-weight: 500;
+  font-size: 0.74rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 0.45rem 0.85rem;
+  border: 1.5px solid currentColor;
+  border-radius: 3px;
+  transform: rotate(-2.5deg);
+  transform-origin: center;
+}
+
+.stamp .dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: currentColor;
+  margin-right: 0.55rem;
+}
+
+.stamp.green {
+  color: var(--green);
+  background: var(--green-bg);
+}
+.stamp.amber {
+  color: var(--amber);
+  background: var(--amber-bg);
+}
+.stamp.red {
+  color: var(--red);
+  background: var(--red-bg);
+}
+.stamp.grey {
+  color: var(--grey);
+  background: var(--grey-bg);
+}
+
+/* ── Credential fields ──────────────────────────────────── */
+dl {
+  margin: 0;
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.55rem 1.4rem;
+}
+
+dt {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  padding-top: 0.15rem;
+}
+
+dd {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 0.92rem;
+  color: var(--ink);
+  word-break: break-word;
+}
+
+.verdict {
+  margin: 0;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+  font-family: var(--display);
+  font-size: 1.08rem;
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+/* ── Misc text ──────────────────────────────────────────── */
+.muted {
+  color: var(--ink-soft);
+}
+.small {
+  font-size: 0.85rem;
+}
+
+footer {
+  margin-top: 0.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+}
+
+footer p {
+  margin: 0;
+  font-size: 0.83rem;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+
+/* ── Motion (opt-in; respects reduced-motion) ───────────── */
+@media (prefers-reduced-motion: no-preference) {
+  /* Card rises as a whole (it carries no other transform). */
+  .reveal {
+    animation: rise 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  /* Children fade in staggered — opacity only, so the stamp keeps its rotation. */
+  .reveal > * {
+    animation: fade 0.45s ease both;
+  }
+  .reveal > *:nth-child(1) {
+    animation-delay: 0.08s;
+  }
+  .reveal > *:nth-child(2) {
+    animation-delay: 0.16s;
+  }
+  .reveal > *:nth-child(3) {
+    animation-delay: 0.24s;
+  }
+  .reveal > *:nth-child(4) {
+    animation-delay: 0.32s;
+  }
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}
