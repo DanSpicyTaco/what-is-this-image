@@ -373,13 +373,8 @@
   .witi-app .reveal {
     animation: rise 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both;
   }
-<<<<<<< HEAD
-  /* Children fade in staggered with opacity only, so the stamp keeps its rotation. */
-  .reveal > * {
-=======
   /* Children fade in staggered — opacity only, so the stamp keeps its rotation. */
   .witi-app .reveal > * {
->>>>>>> 2e40d5d (Support embedded Astro integration)
     animation: fade 0.45s ease both;
   }
   .witi-app .reveal > *:nth-child(1) {
