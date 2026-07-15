@@ -3,7 +3,10 @@
   import ResultCard from './components/ResultCard.svelte';
   import { analyze, type VerifyResult } from './lib/analyze';
 
-  let { assetBase = import.meta.env.BASE_URL }: { assetBase?: string } = $props();
+  let {
+    assetBase = import.meta.env.BASE_URL,
+    embedded = false,
+  }: { assetBase?: string; embedded?: boolean } = $props();
 
   let file = $state<File | null>(null);
   let previewUrl = $state<string | null>(null);
@@ -34,7 +37,10 @@
   }
 </script>
 
-<section class="witi-app" aria-labelledby="witi-title">
+<section
+  class={`witi-app ${embedded ? 'witi-app--embedded' : 'witi-app--standalone'}`}
+  aria-labelledby="witi-title"
+>
   <header>
     <p class="kicker">Image Authenticity</p>
     <h1 id="witi-title">What is <em>this image?</em></h1>
