@@ -78,9 +78,13 @@ export function assertAcceptable(file: File): void {
   }
 }
 
-export async function analyze(file: File, trustEnabled: boolean): Promise<VerifyResult> {
+export async function analyze(
+  file: File,
+  trustEnabled: boolean,
+  assetBase: string,
+): Promise<VerifyResult> {
   assertAcceptable(file);
-  const store = (await readManifestStore(withType(file), trustEnabled)) as
+  const store = (await readManifestStore(withType(file), trustEnabled, assetBase)) as
     | ManifestStoreLike
     | null;
 

@@ -16,25 +16,29 @@ function getC2pa(): Promise<C2paInstance> {
   return instance;
 }
 
-// import.meta.env.BASE_URL ends in '/', so this resolves to `${origin}/trust`.
-const TRUST_BASE = `${location.origin}${import.meta.env.BASE_URL}trust`;
+function trustBase(assetBase: string): string {
+  return new URL('trust/', new URL(assetBase, location.origin))
+    .toString()
+    .replace(/\/$/, '');
+}
 
 // Mirror the old CLI's trust setup: official C2PA list and interim list as anchors,
 // plus the interim allowed-cert-hash list and the EKU config. Dropping the
 // allowed-list/config would leave interim-list signers unverified.
-function trustSettings(trustEnabled: boolean) {
+function trustSettings(trustEnabled: boolean, assetBase: string) {
   if (!trustEnabled) {
     return { verify: { verifyTrust: false } };
   }
+  const base = trustBase(assetBase);
   return {
     verify: { verifyTrust: true },
     trust: {
       trustAnchors: [
-        `${TRUST_BASE}/c2pa-official-anchors.pem`,
-        `${TRUST_BASE}/itl-anchors.pem`,
+        `${base}/c2pa-official-anchors.pem`,
+        `${base}/itl-anchors.pem`,
       ],
-      allowedList: `${TRUST_BASE}/itl-allowed.sha256.txt`,
-      trustConfig: `${TRUST_BASE}/itl-store.cfg`,
+      allowedList: `${base}/itl-allowed.sha256.txt`,
+      trustConfig: `${base}/itl-store.cfg`,
     },
   };
 }
@@ -44,9 +48,17 @@ function trustSettings(trustEnabled: boolean) {
  * C2PA manifest (the SDK returns null rather than throwing for that case);
  * throws UnsupportedFormatError / AssetTooLargeError for bad input.
  */
-export async function readManifestStore(blob: Blob, trustEnabled: boolean): Promise<unknown> {
+export async function readManifestStore(
+  blob: Blob,
+  trustEnabled: boolean,
+  assetBase: string,
+): Promise<unknown> {
   const c2pa = await getC2pa();
-  const reader = await c2pa.reader.fromBlob(blob.type, blob, trustSettings(trustEnabled));
+  const reader = await c2pa.reader.fromBlob(
+    blob.type,
+    blob,
+    trustSettings(trustEnabled, assetBase),
+  );
   if (!reader) return null;
   try {
     return await reader.manifestStore();

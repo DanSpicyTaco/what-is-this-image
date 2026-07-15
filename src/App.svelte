@@ -3,6 +3,8 @@
   import ResultCard from './components/ResultCard.svelte';
   import { analyze, type VerifyResult } from './lib/analyze';
 
+  let { assetBase = import.meta.env.BASE_URL }: { assetBase?: string } = $props();
+
   let file = $state<File | null>(null);
   let previewUrl = $state<string | null>(null);
   let result = $state<VerifyResult | null>(null);
@@ -16,7 +18,7 @@
     error = null;
     result = null;
     try {
-      result = await analyze(file, trustEnabled);
+      result = await analyze(file, trustEnabled, assetBase);
     } catch (e) {
       error = e instanceof Error ? e.message : String(e);
     } finally {
@@ -32,10 +34,10 @@
   }
 </script>
 
-<main>
+<section class="witi-app" aria-labelledby="witi-title">
   <header>
     <p class="kicker">Image Authenticity</p>
-    <h1>What is <em>this image?</em></h1>
+    <h1 id="witi-title">What is <em>this image?</em></h1>
     <div class="rule"></div>
     <p class="tagline">
       Read provenance and metadata signals in your browser. Content Credentials
@@ -76,4 +78,4 @@
       does not mean “not AI”; screenshots and re-uploads often strip provenance.
     </p>
   </footer>
-</main>
+</section>
