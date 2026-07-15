@@ -38,8 +38,8 @@
     <h1>What is <em>this image?</em></h1>
     <div class="rule"></div>
     <p class="tagline">
-      Everything the file says about its own origin — Content Credentials today,
-      watermark and metadata next. Read in your browser; nothing is uploaded.
+      Read provenance and metadata signals in your browser. Content Credentials
+      work today; watermark checks come next. Nothing is uploaded.
     </p>
   </header>
 
@@ -52,14 +52,14 @@
 
   {#if previewUrl}
     <figure class="specimen">
-      <img class="preview" src={previewUrl} alt="The selected file, under examination" decoding="async" />
-      <figcaption class="field-label">Specimen under examination</figcaption>
+      <img class="preview" src={previewUrl} alt="Selected file preview" decoding="async" />
+      <figcaption class="field-label">Selected image</figcaption>
     </figure>
   {/if}
 
   <div aria-live="polite">
     {#if loading}
-      <p class="status">Examining credentials…</p>
+      <p class="status">Checking credentials…</p>
     {:else if error}
       <section class="card reveal" aria-label="Error">
         <span class="stamp red"><span class="dot" aria-hidden="true"></span>Error</span>
@@ -72,9 +72,8 @@
 
   <footer>
     <p>
-      A valid signature proves integrity and signer — not that the content is true.
-      And “no credentials” never means “not AI”: provenance is routinely stripped by
-      screenshots and re-uploads.
+      A valid signature proves integrity and signer identity, not truth. “No credentials”
+      does not mean “not AI”; screenshots and re-uploads often strip provenance.
     </p>
   </footer>
 </main>

@@ -1,4 +1,4 @@
-/* verify — light "certificate of provenance" theme.
+/* verify: light "certificate of provenance" theme.
    Warm archival paper, ink type, verdigris accent, stamped verdicts. */
 
 :root {
@@ -10,7 +10,7 @@
   --line-strong: #c3b9a1;
   --accent: #2c4a44; /* verdigris engraving ink */
 
-  /* status inks — all dark-on-tint, contrast-checked on paper */
+  /* status inks: all dark-on-tint, contrast-checked on paper */
   --green: #1f5d40;
   --green-bg: #e4eee5;
   --amber: #855711;
@@ -373,7 +373,7 @@ footer p {
   .reveal {
     animation: rise 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both;
   }
-  /* Children fade in staggered — opacity only, so the stamp keeps its rotation. */
+  /* Children fade in staggered with opacity only, so the stamp keeps its rotation. */
   .reveal > * {
     animation: fade 0.45s ease both;
   }

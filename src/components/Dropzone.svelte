@@ -22,14 +22,14 @@
     take(e.dataTransfer?.files);
   }}
 >
-  <span class="field-label">Specimen</span>
+  <span class="field-label">Image</span>
   <span class="dz-head">Drop an image</span>
-  <span class="dz-sub">or click to choose — nothing is uploaded</span>
+  <span class="dz-sub">or click to choose; nothing is uploaded</span>
   <input
     class="visually-hidden"
     type="file"
     accept="image/png,image/jpeg,image/webp,image/gif,image/tiff,image/avif"
-    aria-label="Choose an image to verify"
+    aria-label="Choose an image to inspect"
     onchange={(e) => take((e.currentTarget as HTMLInputElement).files)}
   />
 </label>

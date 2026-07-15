@@ -1,42 +1,31 @@
 # What is this image?
 
-A static web app that inspects an image and reports **everything the file says
-about its own origin** — entirely in your browser. Drop in an image and it reads
-the embedded provenance, signature, and metadata. **Nothing is uploaded** — the
-image never leaves your device.
+A static browser app that reads an image's embedded provenance, signature, and metadata. **Nothing is uploaded**; the image never leaves your device.
 
-It's an *authenticity inspector*, not a real/fake oracle. It tells you what an
-image *claims* and whether those claims check out cryptographically — never that
-the picture is "true" or "fake."
+It inspects authenticity signals, not truth. It reports what the image claims about its origin and whether the signature checks out cryptographically.
 
 ## Tools
 
 | Check | What it answers | Status |
 |---|---|---|
-| **Content Credentials** (C2PA) | Who signed it? Valid? Trusted signer? What edits? | **Built** |
+| **Content Credentials** (C2PA) | Who signed it? Is the signature valid? Is the signer trusted? What edits are listed? | **Built** |
 | **EXIF / metadata** | Camera make/model, software, timestamps | **Built** (fallback) |
-| **Watermark** (SynthID & others) | Is an invisible AI watermark present? | **Planned** |
-| **Reverse-image / source history** | Where else has this appeared? | Idea |
+| **Watermark** (SynthID and others) | Is an invisible AI watermark present? | **Planned** |
+| **Reverse image / source history** | Where else has this appeared? | Idea |
 
-New checks plug in as additional analyzers that each contribute a result card to
-the same dropped image — see [Architecture](#architecture).
+New checks can plug in as analyzers and add result cards for the same dropped image. See [Architecture](#architecture).
 
-> Built with Svelte + Vite and the WASM `@contentauth/c2pa-web` SDK. (Began life
-> as a Node CLI using the native `@contentauth/c2pa-node` binding, since retired
-> in favour of this browser app.)
+> Built with Svelte, Vite, and the WASM `@contentauth/c2pa-web` SDK. It started as a Node CLI using the native `@contentauth/c2pa-node` binding, then moved to the browser.
 
-## Why provenance is only half the story
+## Why provenance is not enough
 
-C2PA Content Credentials are powerful but **fragile and one-sided**:
+C2PA Content Credentials are useful, but easy to lose:
 
-- A valid manifest tells you a lot (tool, edit history, signed chain).
-- But credentials are stripped the moment an image is screenshotted, re-saved,
-  or passed through most social platforms.
-- So **"no credentials" is not evidence an image is real** — only that the signal
-  didn't survive (or was never added).
+- A valid manifest can show the tool, edit history, and signed chain.
+- Screenshots, re-saves, and social platforms often strip credentials.
+- **"No credentials" does not prove an image is real.** It only means the signal did not survive or was never added.
 
-That's exactly why this project will grow beyond provenance into watermark and
-metadata signals: no single check is a verdict on its own.
+This project can combine provenance with watermark and metadata checks. No single signal decides the verdict.
 
 ## Run it
 
@@ -52,29 +41,19 @@ Other scripts: `pnpm build` (static output to `dist/`), `pnpm preview`,
 
 ## Signature vs. trust (and the trust lists)
 
-A C2PA signature answers **two** independent questions:
+A C2PA signature answers **two** separate questions:
 
-1. **Integrity** — is the signature cryptographically valid and the content
+1. **Integrity:** is the signature cryptographically valid and the content
    unaltered? (`broken` vs valid)
-2. **Trust** — does the signer's certificate chain to an anchor we recognise?
+2. **Trust:** does the signer's certificate chain to an anchor we recognise?
    (`untrusted` vs `trusted`)
 
-A valid-but-untrusted result usually just means *no trust list is loaded*. This
-app verifies against **both** C2PA trust lists, bundled under
-[`public/trust/`](public/trust) and served same-origin (so the SDK fetches them
-with no cross-origin request):
+A valid-but-untrusted result usually means *no trust list is loaded*. This app verifies against **both** C2PA trust lists, bundled under [`public/trust/`](public/trust) and served same-origin so the SDK fetches them without a cross-origin request:
 
-- **Official C2PA Trust List** — production, launched mid-2025
-  (`c2pa-org/conformance-public`).
-- **Legacy Interim Trust List** — now frozen, still used by some verifiers
-  (`contentcredentials.org/trust/*`), plus its allowed-cert-hash list and EKU
-  config.
+- **Official C2PA Trust List**, production, launched mid-2025 (`c2pa-org/conformance-public`).
+- **Legacy Interim Trust List**, now frozen and still used by some verifiers (`contentcredentials.org/trust/*`), plus its allowed-cert-hash list and EKU config.
 
-Fun thing to notice: OpenAI's images sign via Google's C2PA infrastructure (the
-SynthID partnership), so they chain to a `Google C2PA Media Services` anchor on
-the *official* list. Toggle **"Verify signer against the C2PA trust lists"** off
-and on to watch the same image flip between `valid · unchecked` and
-`valid & trusted`.
+OpenAI images sign via Google's C2PA infrastructure through the SynthID partnership, so they chain to a `Google C2PA Media Services` anchor on the *official* list. Toggle **"Verify signer against the C2PA trust lists"** off and on to see the same image flip between `valid, unchecked` and `valid and trusted`.
 
 ## Architecture
 
@@ -87,28 +66,19 @@ src/
 public/trust/      # the four bundled C2PA trust resources
 ```
 
-Adding a new check (e.g. watermark detection) means writing another analyzer
-that returns a `{ state, detail, … }` result and rendering it as a second
-`ResultCard` for the same dropped image — the dropzone, preview, and privacy
-guarantees are shared.
+To add a check, such as watermark detection, write another analyzer that returns a `{ state, detail, ... }` result and render it as a second `ResultCard` for the same dropped image. The dropzone, preview, and privacy guarantees are shared.
 
-The trust verdict is read from `validation_results.activeManifest.success`
-(`signingCredential.trusted`), **not** the flat `validation_status` array — that
-array can carry an `untrusted` code from a CAWG sub-credential even when the
-primary signature is trusted.
+The trust verdict comes from `validation_results.activeManifest.success` (`signingCredential.trusted`), **not** the flat `validation_status` array. That array can carry an `untrusted` code from a CAWG sub-credential even when the primary signature is trusted.
 
 ## Try it
 
-1. Generate an image in ChatGPT / Adobe Firefly → drop it in → signed & trusted.
-2. Screenshot that image (or upload + re-download it) → drop it in → the
-   credentials are gone ("no provenance signal").
-3. A real photo straight off your phone → no C2PA, but EXIF (camera make/model)
-   may show up.
+1. Generate an image in ChatGPT or Adobe Firefly, then drop it in: signed and trusted.
+2. Screenshot that image, or upload and re-download it, then drop it in: the credentials are gone ("no provenance signal").
+3. Drop in a phone photo: no C2PA, but EXIF such as camera make/model may show up.
 
 `examples/toucan.png` is a ChatGPT-generated sample to start with. More
 credentialed test images: https://contentcredentials.org/verify
 
 ## Deploy
 
-Targeting **Vercel** (auto-detects Vite; fully static, no server functions; no
-`base`-path config for a root deploy). Not wired up yet.
+Target: **Vercel**. It auto-detects Vite, serves the app as static files, needs no server functions, and needs no `base` path for a root deploy. Not wired up yet.

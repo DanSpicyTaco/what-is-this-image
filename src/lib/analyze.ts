@@ -1,4 +1,4 @@
-// analyze.ts — turn an image File into a structured provenance verdict.
+// analyze.ts: turn an image File into a structured provenance verdict.
 //
 // The trust logic is written against the c2pa-web manifest shape, NOT ported
 // from the CLI's flat `validation_status` parsing: the real trust signal lives
@@ -47,20 +47,20 @@ interface ManifestLike {
 }
 
 const ACCEPTED = /^image\/(png|jpeg|webp|gif|tiff|avif)$/;
-const MAX_BYTES = 50 * 1024 * 1024; // 50 MB — our own guard (the SDK only blocks at 1 GB)
+const MAX_BYTES = 50 * 1024 * 1024; // 50 MB guard; the SDK only blocks at 1 GB
 
 const VERDICTS: Record<SignatureState, string> = {
   broken:
-    'Provenance is present but the signature FAILED — treat the manifest as unreliable.',
+    'Provenance is present, but the signature failed. Treat the manifest as unreliable.',
   'valid-untrusted':
-    'Provenance present and the signature is intact, but the signer is not in a loaded trust list.',
+    'Provenance is present and the signature is intact, but the signer is not in a loaded trust list.',
   'valid-trusted':
-    'Provenance present, signature valid, and the signer chains to a known trust anchor.',
+    'Provenance is present, the signature is valid, and the signer chains to a known trust anchor.',
   'valid-unchecked':
-    'Signature is structurally valid, but trust was not verified — toggle trust on to check the signer.',
+    'The signature is valid, but signer trust was not checked. Turn trust on to check it.',
 };
 const NO_CREDENTIALS_VERDICT =
-  'No provenance signal. This is NOT evidence the image is real or human-made — credentials are routinely stripped by screenshots, re-saves and social uploads.';
+  'No provenance signal. This does not prove the image is real or human-made; screenshots, re-saves, and social uploads often strip credentials.';
 
 /** Throw a friendly error for file types/sizes we won't even hand to the SDK. */
 export function assertAcceptable(file: File): void {
@@ -114,8 +114,8 @@ function classifySignature(
   const failure = am?.failure ?? [];
 
   // "Broken" = an integrity/validity failure (bad signature, altered content,
-  // hash mismatch). Trust-only codes (…untrusted) are NOT integrity failures —
-  // exclude them so a valid-but-untrusted signature isn't mislabeled broken.
+  // hash mismatch). Trust-only codes (...untrusted) are not integrity failures;
+  // exclude them so a valid-but-untrusted signature is not mislabeled broken.
   const integrityFailures = failure.filter((c) => !/untrusted/i.test(c.code));
   if (/invalid/i.test(store.validation_state ?? '') || integrityFailures.length) {
     return {

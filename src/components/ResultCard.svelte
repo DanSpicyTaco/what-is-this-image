@@ -4,9 +4,9 @@
   let { result }: { result: VerifyResult } = $props();
 
   const BADGES: Record<SignatureState | 'none', { label: string; cls: string }> = {
-    'valid-trusted': { label: 'Valid & trusted', cls: 'green' },
-    'valid-untrusted': { label: 'Valid · untrusted', cls: 'amber' },
-    'valid-unchecked': { label: 'Valid · unchecked', cls: 'amber' },
+    'valid-trusted': { label: 'Valid and trusted', cls: 'green' },
+    'valid-untrusted': { label: 'Valid, untrusted', cls: 'amber' },
+    'valid-unchecked': { label: 'Valid, unchecked', cls: 'amber' },
     broken: { label: 'Signature broken', cls: 'red' },
     none: { label: 'No credentials', cls: 'grey' },
   };
@@ -40,7 +40,7 @@
       {/each}
     </dl>
   {:else}
-    <p class="muted small">No C2PA credentials and no useful EXIF metadata.</p>
+    <p class="muted small">No C2PA credentials or useful EXIF metadata.</p>
   {/if}
 
   <p class="verdict">{result.verdict}</p>

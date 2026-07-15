@@ -1,8 +1,8 @@
-// c2pa.ts — thin wrapper around the @contentauth/c2pa-web (WASM) SDK.
+// c2pa.ts: thin wrapper around the @contentauth/c2pa-web (WASM) SDK.
 //
-// Reads + verifies C2PA entirely client-side (no upload). Trust resources are
+// Reads and verifies C2PA client-side. Nothing is uploaded. Trust resources are
 // bundled under public/trust and served same-origin, so the SDK fetches them
-// with no cross-origin request — sidestepping CORS on the upstream hosts.
+// without a cross-origin request and avoids upstream CORS issues.
 
 import { createC2pa } from '@contentauth/c2pa-web';
 import wasmSrc from '@contentauth/c2pa-web/resources/c2pa.wasm?url';
@@ -19,7 +19,7 @@ function getC2pa(): Promise<C2paInstance> {
 // import.meta.env.BASE_URL ends in '/', so this resolves to `${origin}/trust`.
 const TRUST_BASE = `${location.origin}${import.meta.env.BASE_URL}trust`;
 
-// Mirror the old CLI's trust setup: official C2PA list + interim list as anchors,
+// Mirror the old CLI's trust setup: official C2PA list and interim list as anchors,
 // plus the interim allowed-cert-hash list and the EKU config. Dropping the
 // allowed-list/config would leave interim-list signers unverified.
 function trustSettings(trustEnabled: boolean) {
